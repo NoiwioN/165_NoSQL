@@ -4,11 +4,8 @@ import net.gibb.model.Climber;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.QueryConfig;
-import org.neo4j.driver.Record;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.gibb.config.*;
 
@@ -31,12 +28,13 @@ public class ClimberRepository {
             return c;
         }
     }
-    public List<Climber> findAll (){
+
+    public List<Climber> findAll() {
         try (var driver = GraphDatabase.driver(DB_URI, AuthTokens.basic(DB_USER, DB_PASSWORD))) {
             var result = driver.executableQuery("MATCH(c:Climber) return c.id as id").withConfig(QueryConfig.builder().withDatabase("neo4j").build()).execute();
 
             var records = result.records();
-            List<Climber> climbers= new ArrayList<>();
+            List<Climber> climbers = new ArrayList<>();
             records.forEach(r -> {
 
                 Climber c = findByID(r.get("id").asInt());
@@ -48,7 +46,15 @@ public class ClimberRepository {
             return climbers;
         }
     }
-    public void createClimber () {
+
+    public void createClimber(Climber climber) {
+        try (var driver = GraphDatabase.driver(DB_URI, AuthTokens.basic(DB_USER, DB_PASSWORD))) {
+            /*driver.session().run("CREATE (c:Climber{name:$name, proficiency:$proficiency, height:$height, wingspan:$wingspan, age:$age, birthday:$birthday",climber.getClimberAsHasmap());*/
+            HashMap<String, Object> properties = climber.getClimberAsHashmap();
+            driver.session().run("CREATE (c:Climber{name:$name, proficiency:$proficiency, height:$height,wingspan:$wingspan, age:$age,birthday:$birthday}) RETURN c", properties);
+            driver.session().run("MATCH (c:Climber) WHERE c.id IS NULL SET c.id = id(c)");
+
+        }
 
     }
 }

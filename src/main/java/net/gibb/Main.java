@@ -1,5 +1,9 @@
 package net.gibb;
+import net.gibb.model.Climber;
 import net.gibb.repository.ClimberRepository;
+import org.neo4j.driver.Value;
+
+import java.security.Key;
 
 public class Main {
     public static void main(String[] args)  {
@@ -18,7 +22,8 @@ public class Main {
         }*/
 
         ClimberRepository climber = new ClimberRepository();
-        climber.findAll().forEach(System.out::println);
+        Climber c= new Climber("Max Mustermann", 175.5f, 30, "1994-05-15", "Advanced", 165);
+        climber.createClimber(c);
 
     }
 }
