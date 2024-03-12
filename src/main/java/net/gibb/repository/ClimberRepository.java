@@ -4,6 +4,7 @@ import net.gibb.model.Climber;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.QueryConfig;
+import org.neo4j.driver.Value;
 
 import java.util.*;
 
@@ -61,5 +62,21 @@ public class ClimberRepository {
         try (var driver = GraphDatabase.driver(DB_URI, AuthTokens.basic(DB_USER, DB_PASSWORD))) {
             driver.executableQuery("MATCH(c:Climber{id:$id}) delete c").withParameters(Map.of("id",id)).withConfig(QueryConfig.builder().withDatabase("neo4j").build()).execute();
         }
+    }
+
+    public void updateClimber (HashMap<String, Object> properties, Integer id){
+        try (var driver = GraphDatabase.driver(DB_URI, AuthTokens.basic(DB_USER, DB_PASSWORD))) {
+            /*driver.session().run("CREATE (c:Climber{name:$name, proficiency:$proficiency, height:$height, wingspan:$wingspan, age:$age, birthday:$birthday",climber.getClimberAsHasmap());*/
+            properties.put("id", id);
+            String query="MATCH (c:Climber{id:$id}) ";
+            for(String key: properties.keySet()){
+                if(!key.equals("id")){
+                    query+="SET c."+key+"=$"+key+" ";
+                }
+            }
+            driver.session().run(query, properties);
+
+        }
+
     }
 }
