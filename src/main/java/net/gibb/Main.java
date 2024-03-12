@@ -23,7 +23,7 @@ public class Main {
 
         ClimberRepository climber = new ClimberRepository();
         Climber c= new Climber("Max Mustermann", 175.5f, 30, "1994-05-15", "Advanced", 165);
-        climber.createClimber(c);
+        climber.deleteById(49);
 
     }
 }

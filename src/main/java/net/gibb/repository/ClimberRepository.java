@@ -57,4 +57,9 @@ public class ClimberRepository {
         }
 
     }
+    public void deleteById(int id){
+        try (var driver = GraphDatabase.driver(DB_URI, AuthTokens.basic(DB_USER, DB_PASSWORD))) {
+            driver.executableQuery("MATCH(c:Climber{id:$id}) delete c").withParameters(Map.of("id",id)).withConfig(QueryConfig.builder().withDatabase("neo4j").build()).execute();
+        }
+    }
 }
